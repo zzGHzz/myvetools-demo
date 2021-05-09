@@ -30,9 +30,24 @@ To use a particular version, for instance, 0.7.0, to compile contracts in your c
 ./node_modules/.bin/solcver -u 0.7.0
 ```
 
-## Setting up
+## Compiling Contract
 
-The following is a snippet for setting up your testing code. As can be seen, it connects a Thor node identified by variable `url` and instantiates variable `connex` that implements `Connex` interfaces for interaction with the blockchain. 
+The snippet below shows how to compile the source file of contract `A`, named `A.sol`, to get the corresponding ABI and binary code for deployment.
+
+```ts
+import { compileContract } from 'myvetools/dist/utils'
+
+const abi = JSON.parse(compileContract(`path/to/A.sol`, 'A', 'abi'))
+const bin = compileContract(filePath, 'A', 'bytecode')
+```
+
+## Example of Contract Testing
+
+I made a simple example to demonstrate how we can use `myvetools` to write code for testing a smart contract. The source code can be found [here](https://github.com/zzGHzz/myvetools-demo).
+
+### Setup
+
+The following is a snippet for setting up your code. As can be seen, it connects a Thor node identified by variable `url` and instantiates variable `connex` that implements `Connex` interfaces for interaction with the blockchain. 
 
 ```typescript
 import { expect, assert } from 'chai'
@@ -71,24 +86,11 @@ To connect to the public testnet, you can set
 const url = 'http://testnet.veblocks.net'
 ```
 
-## Compiling Contract
-
-The snippet below shows how to compile the source file of contract `A` (`./contracts/A.sol`) to get the corresponding ABI and binary code for deployment.
-
-```ts
-import path from 'path'
-import { compileContract } from 'myvetools/dist/utils'
-
-const filePath = path.resolve(process.cwd(), './contracts/A.sol')
-const abi = JSON.parse(compileContract(filePath, 'A', 'abi'))
-const bin = compileContract(filePath, 'A', 'bytecode')
-```
-
-## Clause and Transaction
+### Clause and Transaction
 
 For developers who are not familiar with VeChainThor, one important thing they need to understand is that 
 
-> A transaction can sequentially perform **multiple** tasks (e.g., transfering tokens or calling smart contract functions) initiated by the transaction sender and each task is represented by a **clause**.
+> A transaction can sequentially perform *multiple* tasks (e.g., transfering tokens or calling smart contracts), all initiated by the same transaction sender and each task is represented by a *clause*.
 
 Consequently, to invoke a particular contract function causing a state change, we need to 
 
@@ -98,11 +100,11 @@ Consequently, to invoke a particular contract function causing a state change, w
 
 Please keep this process in mind and it will help you better understand the example code later. More info about the transaction model can be found [here](https://docs.vechain.org/thor/learn/transaction-model.html).
 
-## Contract `A`
+### Contract `A`
 
 Contract `A` is a simple smart contract that basically stores an integer and allows you change its value through function `set`.
 
-```
+```solidity
 pragma solidity ^0.7.0;
 
 contract A {
@@ -119,7 +121,7 @@ contract A {
 	}
 }
 ```
-## Testing Contract `A`
+### Testing
 
 To test the contract, I am going do the following things:
 
@@ -129,7 +131,7 @@ To test the contract, I am going do the following things:
 4. To validate the two emitted events
 5. To call function `a` and check whether the returned value equals `300`
 
-### Step 1
+#### Step 1
 
 We first initiate an object of `Contract` to represent an instance of contract `A`:
 
@@ -144,8 +146,8 @@ We then generate the clause for the deployment with initial value `100`, constru
 ```ts
 const clause1 = c.deploy(0, 100)
 const txRep = await connex.vendor.sign('tx', [clause1])
-				.signer(sender)
-				.request()
+	.signer(sender)
+	.request()
 ```
 
 After that, we check the receipt of the transaction and check whether it has been successfully executed (or not reverted):
@@ -167,26 +169,26 @@ if (receipt.outputs[0].contractAddress !== null) {
 }
 ```
 
-### Step 2
+#### Step 2
 
 ```ts
 const callOut = await c.call('a')
 expect(parseInt(callOut.decoded['0'])).to.equal(100)
 ```
 
-### Step 3
+#### Step 3
 
 ```ts
 const clause2 = c.send('set', 0, 200)
 const clause3 = c.send('set', 0, 300)
 txRep = await connex.vendor.sign('tx', [clause2, clause3])
-			.signer(sender)
-			.request()
+	.signer(sender)
+	.request()
 ```
 
 Here, two clauses are constructed and put in one single transaction. Note that clauses are executed by the order they put in the array passed to function `sign`. Therefore, the stored value will be changed to `200` and then to `300`.
 
-### Step 4
+#### Step 4
 
 ```ts
 import { decodeEvent } from 'myvetools/dist/connexUtils'
@@ -200,7 +202,7 @@ expect(parseInt(decodedEvent['val'])).to.equal(300)
 
 Here, `receipt` has two elements in its field `outputs`, corresponding to the outputs for two included clauses, respectively.
 
-### Step 5
+#### Step 5
 
 ```ts
 const callOut = await c.call('a')
