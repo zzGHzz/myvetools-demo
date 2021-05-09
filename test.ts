@@ -79,11 +79,15 @@ describe('Test contract A', () => {
 			expect(receipt.reverted).to.equal(false)
 
 			// Validate the emitted `SetA` events
-			let decodedEvent = decodeEvent(receipt.outputs[0].events[0], getABI(abi, 'SetA', 'event'))
-			expect(parseInt(decodedEvent['val'])).to.equal(200)
-			decodedEvent = decodeEvent(receipt.outputs[1].events[0], getABI(abi, 'SetA', 'event'))
-			expect(parseInt(decodedEvent['val'])).to.equal(300)
-
+			const expected = [200, 300]
+			receipt.outputs.forEach((output, i) => {
+				const decoded = decodeEvent(
+					output.events[0],
+					getABI(abi, 'SetA', 'event')
+				)
+				expect(parseInt(decoded['val'])).to.equal(expected[i])
+			})
+			
 			// Check the stored value
 			callOut = await c.call('a')
 			expect(parseInt(callOut.decoded['0'])).to.equal(300)

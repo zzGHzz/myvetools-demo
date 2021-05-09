@@ -186,7 +186,7 @@ txRep = await connex.vendor.sign('tx', [clause2, clause3])
 	.request()
 ```
 
-Here, two clauses are constructed and put in one single transaction. Note that clauses are executed by the order they put in the array passed to function `sign`. Therefore, the stored value will be changed to `200` and then to `300`.
+Here, two clauses are constructed and put in one single transaction. Note that clauses are executed by the order they put in the array passed to function `sign`. Therefore, the integer kept by the contract will be changed to `200` and then to `300`.
 
 #### Step 4
 
@@ -194,10 +194,14 @@ Here, two clauses are constructed and put in one single transaction. Note that c
 import { decodeEvent } from 'myvetools/dist/connexUtils'
 import { getABI } from 'myvetools/dist/utils'
 
-let decodedEvent = decodeEvent(receipt.outputs[0].events[0], getABI(abi, 'SetA', 'event'))
-expect(parseInt(decodedEvent['val'])).to.equal(200)
-decodedEvent = decodeEvent(receipt.outputs[1].events[0], getABI(abi, 'SetA', 'event'))
-expect(parseInt(decodedEvent['val'])).to.equal(300)
+const expected = [200, 300]
+receipt.outputs.forEach((output, i) => {
+	const decoded = decodeEvent(
+		output.events[0],
+		getABI(abi, 'SetA', 'event')
+	)
+	expect(parseInt(decoded['val'])).to.equal(expected[i])
+})
 ```
 
 Here, `receipt` has two elements in its field `outputs`, corresponding to the outputs for two included clauses, respectively.
