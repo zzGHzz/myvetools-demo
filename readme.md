@@ -2,7 +2,7 @@
 
 Despite the fact that VeChainThor is EVM compatible, the protocol has its unique design of constructing a transaction that can include multiple clauses representing different tasks. Moreover, each transaction is uniquely identified by a 32-byte id in the system instead of an address and nonce pair. These features make it difficult for developers to test their smart contracts on VeChainThor using tools (e.g., Truffle) built for Ethereum.
 
-I encountered the difficulties when testing my contracts on VeChainThor and started to build my own tool [`myvetools`](https://github.com/zzGHzz/MyVeTools) to make the job easier for me. The tool is not perfect, however, it does allow me to relatively efficiently write TS code to test my contracts.
+I encountered the difficulties and started to build my own tool [`myvetools`](https://github.com/zzGHzz/MyVeTools) to make the job easier for me. The tool is not perfect, however, it does allow me to relatively efficiently write TS code to test my contracts. I feel like it may be worth sharing it with other developers.
 
 The tool could ease your job in three ways:
 
@@ -131,7 +131,7 @@ To test contract `A`, I'm going to do the following things:
 4. To validate the two emitted events
 5. To call function `a` and check whether the returned value equals `300`
 
-Note that the complete code for testing contract `A` can be found [here](https://github.com/zzGHzz/myvetools-demo/blob/main/test.ts)
+Note that the complete code for testing contract `A` can be found [here](https://github.com/zzGHzz/myvetools-demo/blob/main/test.ts).
 
 #### Step 1
 
