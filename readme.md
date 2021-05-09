@@ -41,13 +41,13 @@ const abi = JSON.parse(compileContract(`path/to/A.sol`, 'A', 'abi'))
 const bin = compileContract(filePath, 'A', 'bytecode')
 ```
 
-## Example of Contract Testing
+## An Example
 
-I made a simple example to demonstrate how we can use `myvetools` to write code for testing a smart contract. The source code can be found [here](https://github.com/zzGHzz/myvetools-demo).
+I made a simple [example](https://github.com/zzGHzz/myvetools-demo) to demonstrate how we can use `myvetools` to write code for testing a smart contract. I'm going to explain the example in detail in the rest of this article.
 
 ### Setup
 
-The following is a snippet for setting up your code. As can be seen, it connects a Thor node identified by variable `url` and instantiates variable `connex` that implements `Connex` interfaces for interaction with the blockchain. 
+The following is a snippet for setting up your code for testing. As can be seen, it connects a Thor node identified by variable `url` and instantiates variable `connex` that implements `Connex` interfaces for interacting with a Thor node. 
 
 ```typescript
 import { expect, assert } from 'chai'
@@ -80,7 +80,7 @@ describe('Test contract A', () => {
 }
 ```
 
-To connect to the public testnet, you can set
+To connect to a public testnet node, you can try
 
 ```ts
 const url = 'http://testnet.veblocks.net'
@@ -121,15 +121,17 @@ contract A {
 	}
 }
 ```
-### Testing
+### Testing Contract `A`
 
-To test the contract, I am going do the following things:
+To test contract `A`, I'm going to do the following things:
 
 1. To deploy `A` with an initial value `100`
 2. To call function `a` and check whether the returned value equals `100`
 3. To invoke function `set` **twice within one single transaction**, setting the value to `200` and then to `300`
 4. To validate the two emitted events
 5. To call function `a` and check whether the returned value equals `300`
+
+Note that the complete code for testing contract `A` can be found [here](https://github.com/zzGHzz/myvetools-demo/blob/main/test.ts)
 
 #### Step 1
 
@@ -141,7 +143,9 @@ import { Contract } from 'myvetools/dist/contract'
 const c = new Contract({ abi: abi, connex: connex, bytecode: bin })
 ```
 
-We then generate the clause for the deployment with initial value `100`, construct a transaction that include the clause and send off the transation to the connected node for execution:
+> Recall the relationship between clause and transaction. 
+
+We then generate the clause for the deployment with an initial value `100`, put the clause inside a transaction and send off the transation to the Thor node for execution:
 
 ```ts
 const clause1 = c.deploy(0, 100)
@@ -159,7 +163,7 @@ const receipt = await getReceipt(connex, 5, txRep.txid)
 expect(receipt.reverted).to.equal(false)
 ```
 
-Here, the transaction is identified by its ID, kept by `txRep.txid`, which is then passed to function `getReceipt` to get its receipt from the ledger.
+Here, the transaction is identified by its ID, kept by `txRep.txid`, which is then passed to function `getReceipt`.
 
 The next thing to do is to obtain the contract address and set the address in `c`:
 
