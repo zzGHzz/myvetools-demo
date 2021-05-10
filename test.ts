@@ -9,9 +9,9 @@ import { Contract } from 'myvetools/dist/contract'
 import { getReceipt, decodeEvent } from 'myvetools/dist/connexUtils'
 import { soloAccounts } from 'myvetools/dist/builtin'
 
-describe('Test contract A', () => {
+describe('Using myvetools to test smart contracts', () => {
 	const wallet = new SimpleWallet()
-	// Add the private keys generated for Thor solo mode
+	// Add the private keys generated for Thor solo modes
 	soloAccounts.forEach(val => { wallet.import(val) })
 
 	const url = 'http://localhost:8669/'
