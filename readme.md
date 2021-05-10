@@ -8,7 +8,7 @@ The tool could ease your job in three ways:
 
 * It allows you to relatively easily load a particular version of the solidity compiler;
 * It allows you to compile a solidity source file directly in code;
-* It wraps [`Connex`](https://github.com/vechain/connex) to provide simplified methods for interacting with a Thor node.
+* It wraps [`Connex`](https://github.com/vechain/connex) to provide methods that simplify the interaction with a Thor node.
 
 ## Installation
 
@@ -43,11 +43,11 @@ const bin = compileContract(filePath, 'A', 'bytecode')
 
 ## An Example
 
-I made a simple [example](https://github.com/zzGHzz/myvetools-demo) to demonstrate how we can use `myvetools` to write code for testing a smart contract. I'm going to explain the example in detail in the rest of this article.
+I made a simple [example](https://github.com/zzGHzz/myvetools-demo) to demonstrate how we can use `myvetools` to write code for testing a smart contract. I'm going to explain the example in the rest of this article.
 
 ### Setup
 
-The following is a snippet for setting up your code for testing. As can be seen, it connects a Thor node identified by variable `url` and instantiates variable `connex` that implements `Connex` interfaces for interacting with a Thor node. 
+The following is a snippet for setting up your code for testing. It connects a Thor node identified by variable `url` and instantiates variable `connex` that implements `Connex` interfaces for interacting with a Thor node. 
 
 ```typescript
 import { expect, assert } from 'chai'
@@ -90,19 +90,21 @@ const url = 'http://testnet.veblocks.net'
 
 For developers who are not familiar with VeChainThor, one important thing they need to understand is that 
 
-> A transaction can sequentially perform *multiple* tasks (e.g., transfering tokens or calling smart contracts), all initiated by the same transaction sender and each task is represented by a *clause*.
+> With VeChainThor, a transaction can sequentially perform *multiple* tasks (e.g., transfering tokens or calling smart contracts), all initiated by the same transaction sender. 
+
+> Each task is represented by a *clause* in the system.
 
 Consequently, to invoke a particular contract function causing a state change, we need to 
 
-1. First construct a clause,
+1. First construct a clause that does the job,
 2. Put the clause inside a transaction, and
 3. Send off the transaction for execution.
 
 Please keep this process in mind and it will help you better understand the example code later. More info about the transaction model can be found [here](https://docs.vechain.org/thor/learn/transaction-model.html).
 
-### Contract `A`
+### Target Contract
 
-Contract `A` is a simple smart contract that basically stores an integer and allows you change its value through function `set`.
+Contract `A` is created for this demo. It is a simple smart contract that basically stores an integer and allows you change its value through function `set`.
 
 ```solidity
 pragma solidity ^0.7.0;
@@ -128,7 +130,7 @@ To test contract `A`, I'm going to do the following things:
 1. To deploy `A` with an initial value `100`
 2. To call function `a` and check whether the returned value equals `100`
 3. To invoke function `set` **twice within one single transaction**, setting the value to `200` and then to `300`
-4. To validate the two emitted events
+4. To validate the two emitted `SetA` events
 5. To call function `a` and check whether the returned value equals `300`
 
 Note that the complete code for testing contract `A` can be found [here](https://github.com/zzGHzz/myvetools-demo/blob/main/test.ts).
@@ -145,7 +147,7 @@ const c = new Contract({ abi: abi, connex: connex, bytecode: bin })
 
 > Recall the relationship between clause and transaction. 
 
-We then generate the clause for the deployment with an initial value `100`, put the clause inside a transaction and send off the transation to the Thor node for execution:
+We then generate the clause for deploying the contract with an initial value `100`, put the clause inside a transaction and send off the transation to the Thor node for execution:
 
 ```ts
 const clause1 = c.deploy(0, 100)
