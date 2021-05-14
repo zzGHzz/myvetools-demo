@@ -77,7 +77,7 @@ describe('Test contract A', () => {
 	after(() => {
 		driver.close()
 	})
-}
+})
 ```
 
 To connect to a public testnet node, you can try
