@@ -84,6 +84,12 @@ describe('Test contract A', () => {
 const url = 'http://testnet.veblocks.net'
 ```
 
+`myvetools`提供了命令行工具来生成一个 TS 模版文件用于测试，该文件将包含以上代码片段:
+
+```bash
+node_modules/.bin/mvt -c <FILE>
+```
+
 ### 子句（Clause）与交易（Transaction）
 
 对于不熟悉唯链的开发者，有一个很重要的概念他们需要理解。

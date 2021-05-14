@@ -86,6 +86,12 @@ To connect to a public testnet node, you can try
 const url = 'http://testnet.veblocks.net'
 ```
 
+`myvetools` also provides a commandline tool to create a template TS file that includes the above snippet:
+
+```bash
+node_modules/.bin/mvt -c <FILE>
+```
+
 ### Clause and Transaction
 
 For developers who are not familiar with VeChainThor, one important thing they need to understand is that 
